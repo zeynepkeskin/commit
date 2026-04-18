@@ -110,7 +110,7 @@ function selectTask(index) {
   // update hold screen text
   document.getElementById("hold-task-name").textContent = selectedTask.name;
   document.getElementById("hold-task-time").textContent =
-    `${selectedTask.time} minutes`;
+    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"}`;
 
   // switch screens
   document.getElementById("home-screen").classList.add("hidden");
@@ -204,8 +204,15 @@ function resetHoldState() {
   stopHold();
 
   const circle = document.getElementById("progress-circle");
+  const container = document.querySelector(".progress-container");
+
   circle.style.transition = "stroke-dashoffset 0.05s linear";
+  circle.style.stroke = "limegreen";
+  circle.style.strokeWidth = "6";
+
   circle.style.strokeDashoffset = circumference;
+
+  container.style.transform = "scale(1)";
 }
 
 /* ========================= */
@@ -214,28 +221,27 @@ function resetHoldState() {
 
 function startLockAnimation() {
   const circle = document.getElementById("progress-circle");
+  const container = document.querySelector(".progress-container");
   const text = document.getElementById("hold-task-name");
 
-  text.textContent = "Starting...";
+  // 1. LOCK TEXT
+  text.textContent = "Locked in.";
 
-  // quick finishing sweep animation
-  circle.style.transition = "stroke-dashoffset 0.4s ease-out";
-  circle.style.transition = "stroke-dashoffset 0.4s ease-out";
-  circle.style.strokeDashoffset = 0;
+  // 2. SNAP CIRCLE FULL
+  circle.style.transition = "stroke-dashoffset 0.15s ease-out";
+  circle.style.strokeDashoffset = "0";
 
+  // 3. VISUAL EMPHASIS (thicker + brighter + scale)
+  circle.style.stroke = "#00ff88";
+  circle.style.strokeWidth = "10";
+
+  container.style.transform = "scale(1.08)";
+  container.style.transition = "transform 0.2s ease-out";
+
+  // 4. FREEZE MOMENT (intentional pause)
   setTimeout(() => {
     goToTimerScreen();
-  }, 700);
-}
-
-function goToTimerScreen() {
-  document.getElementById("hold-screen").classList.add("hidden");
-  document.getElementById("timer-screen").classList.remove("hidden");
-
-  document.getElementById("timer-task-name").textContent = selectedTask.name;
-
-  resetTimerUI();
-  startTimer(selectedTask.time);
+  }, 500);
 }
 
 /* ========================= */
@@ -285,7 +291,7 @@ function timerFinished() {
 commitCount++;
 document.getElementById("completion-streak").textContent =
   `Today’s commits: ${commitCount}`;
-  
+
   document.getElementById("timer-screen").classList.add("hidden");
   document.getElementById("completion-screen").classList.remove("hidden");
 
@@ -294,7 +300,7 @@ document.getElementById("completion-streak").textContent =
     selectedTask.name;
 
   document.getElementById("completion-time-spent").textContent =
-    `${selectedTask.time} minutes completed`;
+    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"} completed`;
 
   document.getElementById("completion-title").textContent = "Task Complete";
 
@@ -313,6 +319,17 @@ function returnToHome() {
 /* ========================= */
 /* TIMER CONTROLS */
 /* ========================= */
+
+function goToTimerScreen() {
+  document.getElementById("hold-screen").classList.add("hidden");
+  document.getElementById("timer-screen").classList.remove("hidden");
+
+  document.getElementById("timer-task-name").textContent =
+    selectedTask.name;
+
+  resetTimerUI();
+  startTimer(selectedTask.time);
+}
 
 function toggleTimer() {
   isPaused = !isPaused;
@@ -384,7 +401,7 @@ function createCustomTask() {
   // go directly to hold screen
   document.getElementById("hold-task-name").textContent = selectedTask.name;
   document.getElementById("hold-task-time").textContent =
-    `${selectedTask.time} minutes`;
+    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"}`;
 
   document.getElementById("home-screen").classList.add("hidden");
   document.getElementById("hold-screen").classList.remove("hidden");
