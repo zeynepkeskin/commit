@@ -9,14 +9,7 @@ let isHolding = false;
 let holdStartTime = 0;
 
 
-const holdArea = document.getElementById("hold-area");
-holdArea.addEventListener("mousedown", startHold);
-holdArea.addEventListener("mouseup", stopHold);
-holdArea.addEventListener("mouseleave", stopHold);
-
-// mobile support
-holdArea.addEventListener("touchstart", startHold);
-holdArea.addEventListener("touchend", stopHold);
+/* ---------------- TASK DATA ---------------- */
 
 const tasks = {
   normal: [
@@ -34,13 +27,22 @@ const tasks = {
   ]
 };
 
+/* ---------------- INIT ---------------- */
+
+window.onload = () => {
+  shuffleTasks();
+  initHoldEvents();
+  resetRadial();
+};
+
+/* ---------------- SHUFFLE ---------------- */
+
 function shuffleTasks() {
   shuffleCount++;
 
   const pool = tasks[mode];
-
-  // shuffle + select 3
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
+
   currentTasks = shuffled.slice(0, 3);
 
   document.getElementById("task1").textContent =
@@ -52,32 +54,51 @@ function shuffleTasks() {
   document.getElementById("task3").textContent =
     `${currentTasks[2].name} (${currentTasks[2].time} min)`;
 
-    if ( shuffleCount >= 4 && mode === "normal") {
-        document.getElementById("too-tired-btn").classList.remove("hidden");
-    }
-
+  if (shuffleCount >= 4 && mode === "normal") {
+    document.getElementById("too-tired-btn").classList.remove("hidden");
+  }
 }
-shuffleTasks();
+
+/* ---------------- MODE ---------------- */
 
 function showEasyMode() {
   mode = "tired";
+  shuffleCount = 0;
   shuffleTasks();
 }
 
+/* ---------------- TASK SELECT ---------------- */
+
 function selectTask(index) {
-    // get task from current state
-    selectedTask = currentTasks[index];
+  selectedTask = currentTasks[index];
+  if (!selectedTask) return;
 
-    if (!selectedTask) return;
+  document.getElementById("progress-circle").style.transition =
+  "stroke-dashoffset 0.05s linear";
 
-    // update hold screen UI
-    document.getElementById("hold-task-name").textContent = selectedTask.name;
+  document.getElementById("hold-task-name").textContent =
+    selectedTask.name;
 
-    document.getElementById("hold-task-time").textContent = `${selectedTask.time} minutes`;
+  document.getElementById("hold-task-time").textContent =
+    `${selectedTask.time} minutes`;
 
-    // switch screens
-    document.getElementById("home-screen").classList.add("hidden");
-    document.getElementById("hold-screen").classList.remove("hidden");
+  document.getElementById("home-screen").classList.add("hidden");
+  document.getElementById("hold-screen").classList.remove("hidden");
+
+  resetHoldState();
+}
+
+/* ---------------- HOLD SYSTEM ---------------- */
+
+function initHoldEvents() {
+  const holdArea = document.getElementById("hold-area");
+
+  holdArea.addEventListener("mousedown", startHold);
+  holdArea.addEventListener("mouseup", stopHold);
+  holdArea.addEventListener("mouseleave", stopHold);
+
+  holdArea.addEventListener("touchstart", startHold);
+  holdArea.addEventListener("touchend", stopHold);
 }
 
 function startHold() {
@@ -90,22 +111,19 @@ function startHold() {
   holdInterval = setInterval(() => {
     const elapsed = Date.now() - holdStartTime;
 
-    // acceleration curve 
-    // starts slow, speeds up over time
-    const speedMultiplier = 1 + elapsed / 1000; // ramps up
-
+    const speedMultiplier = 1 + elapsed / 1000;
     holdProgress += speedMultiplier * 0.8;
 
     if (holdProgress >= 100) {
       holdProgress = 100;
       updateHoldUI();
-      startLockAnimation();
       stopHold();
+      startLockAnimation();
       return;
     }
 
     updateHoldUI();
-  }, 16); // ~60fps
+  }, 16);
 }
 
 function stopHold() {
@@ -119,10 +137,34 @@ function stopHold() {
   }
 }
 
+/* ---------------- RADIAL PROGRESS ---------------- */
+
 function updateHoldUI() {
   const circle = document.getElementById("progress-circle");
-  circle.style.transform = `scale(${holdProgress / 100})`;
+  const radius = 70;
+  const circumference = 2 * Math.PI * radius;
+
+  const offset =
+    circumference - (holdProgress / 100) * circumference;
+
+  circle.style.strokeDashoffset = offset;
 }
+
+function resetRadial() {
+  const circle = document.getElementById("progress-circle");
+  circle.style.strokeDasharray = 2 * Math.PI * 70;
+  circle.style.strokeDashoffset = 2 * Math.PI * 70;
+}
+
+/* ---------------- HOLD RESET ---------------- */
+
+function resetHoldState() {
+  holdProgress = 0;
+  stopHold();
+  resetRadial();
+}
+
+/* ---------------- LOCK + TRANSITION ---------------- */
 
 function startLockAnimation() {
   const circle = document.getElementById("progress-circle");
@@ -130,17 +172,17 @@ function startLockAnimation() {
 
   text.textContent = "Starting...";
 
-  circle.classList.add("lock-spin");
+  // Phase 2: quick full sweep animation
+  circle.style.transition = "stroke-dashoffset 0.4s ease-out";
+  circle.style.strokeDashoffset = "0";
 
   setTimeout(() => {
     goToNextScreen();
-  }, 600);
+  }, 700);
 }
 
 function goToNextScreen() {
   document.getElementById("hold-screen").classList.add("hidden");
-  // placeholder for next screen (timer screen later)
+
   alert("Task started: " + selectedTask.name);
 }
-
-

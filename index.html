@@ -56,8 +56,6 @@
       </button>
     </div>
 
-
-
     <!-- HOLD TO COMMIT SCREEN -->
     <div id="hold-screen" class="screen hidden">
       <!-- Task info -->
@@ -75,7 +73,22 @@
         <div id="hold-area" class="hold-area">
           <!-- Progress indicator (visual feedback) -->
           <div class="progress-container">
-            <div id="progress-circle" class="progress-circle"></div>
+            <svg
+              class="progress-ring"
+              width="160"
+              height="160"
+              viewBox="0 0 160 160"
+            >
+              <circle class="progress-ring-bg" cx="80" cy="80" r="70"></circle>
+
+              <circle
+                id="progress-circle"
+                class="progress-ring-fill"
+                cx="80"
+                cy="80"
+                r="70"
+              ></circle>
+            </svg>
           </div>
         </div>
       </div>
