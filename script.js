@@ -1,5 +1,8 @@
 let shuffleCount = 0;
 let mode = "normal";
+let currentTasks = [];
+let selectedTask = null;
+
 
 const tasks = {
   normal: [
@@ -22,26 +25,44 @@ function shuffleTasks() {
 
   const pool = tasks[mode];
 
+  // shuffle + select 3
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
-  const selected = shuffled.slice(0, 3);
+  currentTasks = shuffled.slice(0, 3);
 
   document.getElementById("task1").textContent =
-    `${selected[0].name} (${selected[0].time} min)`;
+    `${currentTasks[0].name} (${currentTasks[0].time} min)`;
 
   document.getElementById("task2").textContent =
-    `${selected[1].name} (${selected[1].time} min)`;
+    `${currentTasks[1].name} (${currentTasks[1].time} min)`;
 
   document.getElementById("task3").textContent =
-    `${selected[2].name} (${selected[2].time} min)`;
+    `${currentTasks[2].name} (${currentTasks[2].time} min)`;
 
-    if ( shuffleCount >= 3 && mode === "normal") {
+    if ( shuffleCount >= 4 && mode === "normal") {
         document.getElementById("too-tired-btn").classList.remove("hidden");
     }
 
 }
+shuffleTasks();
 
 function showEasyMode() {
   mode = "tired";
   shuffleTasks();
+}
+
+function selectTask(index) {
+    // get task from current state
+    selectedTask = currentTasks[index];
+
+    if (!selectedTask) return;
+
+    // update hold screen UI
+    document.getElementById("hold-task-name").textContent = selectedTask.name;
+
+    document.getElementById("hold-task-time").textContent = `${selectedTask.time} minutes`;
+
+    // switch screens
+    document.getElementById("home-screen").classList.add("hidden");
+    document.getElementById("hold-screen").classList.remove("hidden");
 }
 

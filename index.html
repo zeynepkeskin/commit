@@ -12,13 +12,13 @@
 
       <!-- Suggested tasks -->
       <div class="suggestions">
-        <button id="task1" class="task-btn" onclick="selectTask('Study', 10)">
+        <button id="task1" class="task-btn" onclick="selectTask(0)">
           Study (10 min)
         </button>
-        <button id="task2" class="task-btn" onclick="selectTask('Clean', 10)">
-          Clean (10 min)
+        <button id="task2" class="task-btn" onclick="selectTask(1)">
+          Clean your desk (10 min)
         </button>
-        <button id="task3" class="task-btn" onclick="selectTask('Walk', 5)">
+        <button id="task3" class="task-btn" onclick="selectTask(2)">
           Walk (5 min)
         </button>
       </div>
@@ -54,6 +54,31 @@
       >
         Too tired?
       </button>
+    </div>
+
+
+
+    <!-- HOLD TO COMMIT SCREEN -->
+    <div id="hold-screen" class="screen hidden">
+      <!-- Task info -->
+      <div class="hold-header">
+        <h1 id="hold-task-name">Task Name</h1>
+        <p id="hold-task-time">10 minutes</p>
+
+        <!-- Instruction -->
+        <div class="hold-instruction">
+          <h2>Hold to Commit</h2>
+          <p>Stay pressed until the circle fills</p>
+        </div>
+
+        <!-- Main interaction zone -->
+        <div id="hold-area" class="hold-area">
+          <!-- Progress indicator (visual feedback) -->
+          <div class="progress-container">
+            <div id="progress-circle" class="progress-circle"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="script.js"></script>
