@@ -2,6 +2,10 @@
 /* GLOBAL STATE */
 /* ========================= */
 
+let streak = parseInt(localStorage.getItem("commit-streak")) || 0;
+let lastCommitDate = localStorage.getItem("last-commit-date") || null;
+
+
 let shuffleCount = 0;
 let mode = "normal";
 let currentTasks = [];
@@ -37,11 +41,19 @@ const reinforcementMessages = [
   "Consistency changes identity.",
 ];
 
-const identity = identityMessages[Math.floor(Math.random() * identityMessages.length)];
-const reinforce = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
+let identity, reinforce;
 
-document.getElementById("completion-identity").textContent = identity;
-document.getElementById("completion-reinforce").textContent = reinforce;
+window.onload = () => {
+  shuffleTasks();
+  initHoldEvents();
+  resetRadial();
+
+  identity = identityMessages[Math.floor(Math.random() * identityMessages.length)];
+  reinforce = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
+
+  document.getElementById("completion-identity").textContent = identity;
+  document.getElementById("completion-reinforce").textContent = reinforce;
+};
 
 /* ========================= */
 /* TASK DATA */
@@ -67,11 +79,6 @@ const tasks = {
 /* INIT */
 /* ========================= */
 
-window.onload = () => {
-  shuffleTasks();
-  initHoldEvents();
-  resetRadial();
-};
 
 /* ========================= */
 /* TASK SHUFFLING */
@@ -119,17 +126,14 @@ function showEasyMode() {
 /* ========================= */
 
 function selectTask(index) {
-  selectedTask = currentTasks[index];
-  
-  if (!selectedTask) {
-    overlay.classList.add("hidden");
-    return;
-  }
-
-
   const overlay = document.getElementById("commit-overlay");
   const text = document.getElementById("commit-text");
   const sub = document.getElementById("commit-subtext");
+
+  selectedTask = currentTasks[index];
+
+  if (!selectedTask) return;
+
 
   // lock in text immediately
   text.textContent = "Committing...";
@@ -294,7 +298,7 @@ function startLockAnimation() {
 function startTimer(minutes) {
   clearInterval(timerInterval);
 
-  totalTime =  5;//minutes * 60;  RIMER FIX HEREEREHER LATER ER FIX HEREEREHER LATER
+  totalTime =  3;//minutes * 60; RIMER FIX LATER
   timeLeft = totalTime;
   isPaused = false;
 
@@ -331,6 +335,8 @@ function updateTimerUI() {
 }
 
 function timerFinished() {
+    updateStreak();
+commitCount++;
     document.getElementById("completion-screen").style.background = "#0f0f0f";
   document.getElementById("timer-screen").classList.add("hidden");
   document.getElementById("completion-screen").classList.remove("hidden");
@@ -338,7 +344,6 @@ function timerFinished() {
   const title = document.getElementById("completion-title");
   const task = document.getElementById("completion-task-name");
   const time = document.getElementById("completion-time-spent");
-  const streak = document.getElementById("completion-streak");
 
   // set values
   task.textContent = selectedTask.name;
@@ -347,8 +352,9 @@ function timerFinished() {
     selectedTask.time === 1 ? "minute" : "minutes"
   } completed`;
 
-  streak.textContent = `Commit streak today: ${commitCount + 1}`;
-commitCount++;
+  document.getElementById("completion-streak").textContent =
+  `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
+
 
 setTimeout(() => {
   document.getElementById("completion-screen").style.background = "#111";
@@ -467,4 +473,25 @@ function createCustomTask() {
   document.getElementById("hold-screen").classList.remove("hidden");
 
   resetHoldState();
+}
+
+
+function updateStreak() {
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+  if (!lastCommitDate) {
+    streak = 1;
+  } 
+  else if (lastCommitDate === yesterday) {
+    streak += 1;
+  } 
+  else if (lastCommitDate !== today) {
+    streak = 1;
+  }
+
+  lastCommitDate = today;
+
+  localStorage.setItem("commit-streak", streak);
+  localStorage.setItem("last-commit-date", lastCommitDate);
 }
