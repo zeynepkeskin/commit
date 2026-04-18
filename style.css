@@ -83,3 +83,13 @@ button {
   background: limegreen;
   transition: width 0.2s linear;
 }
+
+.timer-controls {
+  margin-top: 20px;
+}
+
+#pause-message {
+  color: #aaa;
+  margin-top: 10px;
+  font-size: 14px;
+}

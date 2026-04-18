@@ -14,6 +14,7 @@ const circumference = 2 * Math.PI * radius;
 let timerInterval = null;
 let timeLeft = 0;
 let totalTime = 0;
+let isPaused = false;
 
 /* ---------------- TASK DATA ---------------- */
 
@@ -192,10 +193,10 @@ function goToTimerScreen() {
   document.getElementById("hold-screen").classList.add("hidden");
   document.getElementById("timer-screen").classList.remove("hidden");
 
-  // show task name on timer screen
   document.getElementById("timer-task-name").textContent =
     selectedTask.name;
 
+  resetTimerUI();
   startTimer(selectedTask.time);
 }
 
@@ -206,12 +207,14 @@ function startTimer(minutes) {
 
   totalTime = minutes * 60;
   timeLeft = totalTime;
+  isPaused = false;
 
   updateTimerUI();
 
   timerInterval = setInterval(() => {
-    timeLeft--;
+    if (isPaused) return;
 
+    timeLeft--;
     updateTimerUI();
 
     if (timeLeft <= 0) {
@@ -253,3 +256,37 @@ function returnToHome() {
   selectedTask = null;
 }
 
+function toggleTimer() {
+  isPaused = !isPaused;
+
+  const btn = document.getElementById("pause-btn");
+  const quitBtn = document.getElementById("quit-btn");
+  const msg = document.getElementById("pause-message");
+
+  if (isPaused) {
+    btn.textContent = "Resume";
+    quitBtn.classList.remove("hidden");
+    msg.classList.remove("hidden");
+  } else {
+    btn.textContent = "Pause";
+    quitBtn.classList.add("hidden");
+    msg.classList.add("hidden");
+  }
+}
+
+function quitToHome() {
+  clearInterval(timerInterval);
+
+  document.getElementById("timer-screen").classList.add("hidden");
+  document.getElementById("home-screen").classList.remove("hidden");
+
+  resetHoldState();
+}
+
+function resetTimerUI() {
+  isPaused = false;
+
+  document.getElementById("pause-btn").textContent = "Pause";
+  document.getElementById("quit-btn").classList.add("hidden");
+  document.getElementById("pause-message").classList.add("hidden");
+}

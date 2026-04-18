@@ -112,8 +112,17 @@
         <div id="timer-bar" class="timer-bar"></div>
       </div>
 
-      <!-- Stop button (important for realism) -->
-      <button id="stop-timer-btn" onclick="stopTimer()">Stop</button>
+      <div class="timer-controls">
+        <button id="pause-btn" onclick="toggleTimer()">Pause</button>
+
+        <button id="quit-btn" class="hidden" onclick="quitToHome()">
+          Quit
+        </button>
+
+        <p id="pause-message" class="hidden">
+          Don’t quit now. Small steps still count.
+        </p>
+      </div>
     </div>
 
     <script src="script.js"></script>
