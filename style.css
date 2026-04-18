@@ -65,3 +65,21 @@ button {
   justify-content: center;
   align-items: center;
 }
+
+
+
+.timer-bar-container {
+  width: 200px;
+  height: 10px;
+  background: #333;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  width: 0%;
+  background: limegreen;
+  transition: width 0.2s linear;
+}

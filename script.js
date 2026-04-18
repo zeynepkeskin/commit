@@ -8,6 +8,12 @@ let holdInterval = null;
 let isHolding = false;
 let holdStartTime = 0;
 
+const radius = 70;
+const circumference = 2 * Math.PI * radius;
+
+let timerInterval = null;
+let timeLeft = 0;
+let totalTime = 0;
 
 /* ---------------- TASK DATA ---------------- */
 
@@ -16,15 +22,15 @@ const tasks = {
     { name: "Study", time: 10 },
     { name: "Clean your desk", time: 10 },
     { name: "Read", time: 10 },
-    { name: "Stretch", time: 5 }
+    { name: "Stretch", time: 5 },
   ],
 
   tired: [
     { name: "Drink water", time: 1 },
     { name: "Sit up", time: 1 },
     { name: "Open notes", time: 1 },
-    { name: "Take 3 breaths", time: 1 }
-  ]
+    { name: "Take 3 breaths", time: 1 },
+  ],
 };
 
 /* ---------------- INIT ---------------- */
@@ -74,10 +80,9 @@ function selectTask(index) {
   if (!selectedTask) return;
 
   document.getElementById("progress-circle").style.transition =
-  "stroke-dashoffset 0.05s linear";
+    "stroke-dashoffset 0.05s linear";
 
-  document.getElementById("hold-task-name").textContent =
-    selectedTask.name;
+  document.getElementById("hold-task-name").textContent = selectedTask.name;
 
   document.getElementById("hold-task-time").textContent =
     `${selectedTask.time} minutes`;
@@ -141,27 +146,28 @@ function stopHold() {
 
 function updateHoldUI() {
   const circle = document.getElementById("progress-circle");
-  const radius = 70;
-  const circumference = 2 * Math.PI * radius;
 
-  const offset =
-    circumference - (holdProgress / 100) * circumference;
+  const offset = circumference - (holdProgress / 100) * circumference;
 
   circle.style.strokeDashoffset = offset;
 }
 
 function resetRadial() {
   const circle = document.getElementById("progress-circle");
-  circle.style.strokeDasharray = 2 * Math.PI * 70;
-  circle.style.strokeDashoffset = 2 * Math.PI * 70;
-}
 
+  circle.style.strokeDasharray = circumference;
+  circle.style.strokeDashoffset = circumference;
+  circle.style.transition = "stroke-dashoffset 0.05s linear";
+}
 /* ---------------- HOLD RESET ---------------- */
 
 function resetHoldState() {
   holdProgress = 0;
   stopHold();
-  resetRadial();
+
+  const circle = document.getElementById("progress-circle");
+  circle.style.transition = "stroke-dashoffset 0.05s linear";
+  circle.style.strokeDashoffset = circumference;
 }
 
 /* ---------------- LOCK + TRANSITION ---------------- */
@@ -174,15 +180,76 @@ function startLockAnimation() {
 
   // Phase 2: quick full sweep animation
   circle.style.transition = "stroke-dashoffset 0.4s ease-out";
-  circle.style.strokeDashoffset = "0";
+  circle.style.transition = "stroke-dashoffset 0.4s ease-out";
+  circle.style.strokeDashoffset = 0;
 
   setTimeout(() => {
-    goToNextScreen();
+    goToTimerScreen();
   }, 700);
 }
 
-function goToNextScreen() {
+function goToTimerScreen() {
   document.getElementById("hold-screen").classList.add("hidden");
+  document.getElementById("timer-screen").classList.remove("hidden");
 
-  alert("Task started: " + selectedTask.name);
+  // show task name on timer screen
+  document.getElementById("timer-task-name").textContent =
+    selectedTask.name;
+
+  startTimer(selectedTask.time);
 }
+
+/* ---------------- TIMER ---------------- */
+
+function startTimer(minutes) {
+  clearInterval(timerInterval);
+
+  totalTime = minutes * 60;
+  timeLeft = totalTime;
+
+  updateTimerUI();
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+
+    updateTimerUI();
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerFinished();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  document.getElementById("timer-countdown").textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  // optional progress bar
+  const progress = 1 - timeLeft / totalTime;
+  const bar = document.getElementById("timer-bar");
+
+  if (bar) {
+    bar.style.width = `${progress * 100}%`;
+  }
+}
+
+function timerFinished() {
+  document.getElementById("timer-status").textContent =
+    "Task complete.";
+
+  setTimeout(() => {
+    returnToHome();
+  }, 1500);
+}
+
+function returnToHome() {
+  document.getElementById("timer-screen").classList.add("hidden");
+  document.getElementById("home-screen").classList.remove("hidden");
+
+  selectedTask = null;
+}
+

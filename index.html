@@ -94,6 +94,28 @@
       </div>
     </div>
 
+    <!-- TIMER SCREEN -->
+    <div id="timer-screen" class="screen hidden">
+      <!-- Task title -->
+      <h1 id="timer-task-name">Task Name</h1>
+
+      <!-- Timer display -->
+      <div class="timer-display">
+        <h2 id="timer-countdown">10:00</h2>
+      </div>
+
+      <!-- Status text -->
+      <p id="timer-status">Stay focused.</p>
+
+      <!-- Optional progress bar (simple fallback visual) -->
+      <div class="timer-bar-container">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+
+      <!-- Stop button (important for realism) -->
+      <button id="stop-timer-btn" onclick="stopTimer()">Stop</button>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
