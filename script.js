@@ -6,6 +6,7 @@ let shuffleCount = 0;
 let mode = "normal";
 let currentTasks = [];
 let selectedTask = null;
+let commitCount = 0; 
 
 /* Hold system */
 let holdProgress = 0;
@@ -22,7 +23,6 @@ let timerInterval = null;
 let timeLeft = 0;
 let totalTime = 0;
 let isPaused = false;
-
 
 /* ========================= */
 /* TASK DATA */
@@ -44,7 +44,6 @@ const tasks = {
   ],
 };
 
-
 /* ========================= */
 /* INIT */
 /* ========================= */
@@ -54,7 +53,6 @@ window.onload = () => {
   initHoldEvents();
   resetRadial();
 };
-
 
 /* ========================= */
 /* TASK SHUFFLING */
@@ -87,7 +85,6 @@ function shuffleTasks() {
   }
 }
 
-
 /* ========================= */
 /* MODE SWITCHING */
 /* ========================= */
@@ -97,7 +94,6 @@ function showEasyMode() {
   shuffleCount = 0;
   shuffleTasks();
 }
-
 
 /* ========================= */
 /* TASK SELECTION */
@@ -122,7 +118,6 @@ function selectTask(index) {
 
   resetHoldState();
 }
-
 
 /* ========================= */
 /* HOLD SYSTEM */
@@ -181,7 +176,6 @@ function stopHold() {
   }
 }
 
-
 /* ========================= */
 /* RADIAL PROGRESS */
 /* ========================= */
@@ -201,7 +195,6 @@ function resetRadial() {
   circle.style.transition = "stroke-dashoffset 0.05s linear";
 }
 
-
 /* ========================= */
 /* HOLD RESET */
 /* ========================= */
@@ -214,7 +207,6 @@ function resetHoldState() {
   circle.style.transition = "stroke-dashoffset 0.05s linear";
   circle.style.strokeDashoffset = circumference;
 }
-
 
 /* ========================= */
 /* LOCK ANIMATION + TRANSITION */
@@ -240,13 +232,11 @@ function goToTimerScreen() {
   document.getElementById("hold-screen").classList.add("hidden");
   document.getElementById("timer-screen").classList.remove("hidden");
 
-  document.getElementById("timer-task-name").textContent =
-    selectedTask.name;
+  document.getElementById("timer-task-name").textContent = selectedTask.name;
 
   resetTimerUI();
   startTimer(selectedTask.time);
 }
-
 
 /* ========================= */
 /* TIMER SYSTEM */
@@ -292,12 +282,25 @@ function updateTimerUI() {
 }
 
 function timerFinished() {
-  document.getElementById("timer-status").textContent =
-    "Task complete.";
+commitCount++;
+document.getElementById("completion-streak").textContent =
+  `Today’s commits: ${commitCount}`;
+  
+  document.getElementById("timer-screen").classList.add("hidden");
+  document.getElementById("completion-screen").classList.remove("hidden");
 
-  setTimeout(() => {
-    returnToHome();
-  }, 1500);
+  // populate completion screen
+  document.getElementById("completion-task-name").textContent =
+    selectedTask.name;
+
+  document.getElementById("completion-time-spent").textContent =
+    `${selectedTask.time} minutes completed`;
+
+  document.getElementById("completion-title").textContent = "Task Complete";
+
+  // simple reinforcement stat (placeholder for now)
+  document.getElementById("completion-streak").textContent =
+    "Today’s commits: 1";
 }
 
 function returnToHome() {
@@ -306,7 +309,6 @@ function returnToHome() {
 
   selectedTask = null;
 }
-
 
 /* ========================= */
 /* TIMER CONTROLS */
@@ -347,6 +349,18 @@ function resetTimerUI() {
   document.getElementById("pause-message").classList.add("hidden");
 }
 
+function returnToHomeFromCompletion() {
+  document.getElementById("completion-screen").classList.add("hidden");
+  document.getElementById("home-screen").classList.remove("hidden");
+
+  // reset state
+  selectedTask = null;
+
+  // optional cleanup (prevents weird carryover bugs)
+  timeLeft = 0;
+  totalTime = 0;
+  isPaused = false;
+}
 
 /* ========================= */
 /* CUSTOM TASK */
@@ -360,7 +374,7 @@ function createCustomTask() {
 
   selectedTask = {
     name: name,
-    time: time
+    time: time,
   };
 
   // clear inputs (UX)

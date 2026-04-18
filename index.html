@@ -32,11 +32,7 @@
       </div>
 
       <!-- Shuffle Suggestions -->
-      <button
-        id="shuffle-btn"
-        class="secondary-btn"
-        onclick="shuffleTasks()"
-      >
+      <button id="shuffle-btn" class="secondary-btn" onclick="shuffleTasks()">
         Shuffle suggestions
       </button>
 
@@ -45,11 +41,7 @@
         <h3>Custom task</h3>
 
         <!-- Task Name Input -->
-        <input
-          type="text"
-          id="custom-task-name"
-          placeholder="Task name"
-        />
+        <input type="text" id="custom-task-name" placeholder="Task name" />
 
         <!-- Task Duration Input -->
         <input
@@ -60,10 +52,7 @@
         />
 
         <!-- Start Custom Task -->
-        <button
-          class="task-btn"
-          onclick="createCustomTask()"
-        >
+        <button class="task-btn" onclick="createCustomTask()">
           Start custom task
         </button>
       </div>
@@ -104,12 +93,7 @@
               viewBox="0 0 160 160"
             >
               <!-- Background Circle -->
-              <circle
-                class="progress-ring-bg"
-                cx="80"
-                cy="80"
-                r="70"
-              ></circle>
+              <circle class="progress-ring-bg" cx="80" cy="80" r="70"></circle>
 
               <!-- Animated Progress Circle -->
               <circle
@@ -148,16 +132,10 @@
       <!-- Timer Controls -->
       <div class="timer-controls">
         <!-- Pause / Resume -->
-        <button id="pause-btn" onclick="toggleTimer()">
-          Pause
-        </button>
+        <button id="pause-btn" onclick="toggleTimer()">Pause</button>
 
         <!-- Quit (Hidden Initially) -->
-        <button
-          id="quit-btn"
-          class="hidden"
-          onclick="quitToHome()"
-        >
+        <button id="quit-btn" class="hidden" onclick="quitToHome()">
           Quit
         </button>
 
@@ -166,6 +144,36 @@
           Don’t quit now. Small steps still count.
         </p>
       </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- COMPLETION SCREEN -->
+    <!-- ========================= -->
+    <div id="completion-screen" class="screen hidden">
+      <!-- Main message -->
+      <h1 id="completion-title">Task Complete</h1>
+
+      <!-- Task summary -->
+      <div class="completion-summary">
+        <p id="completion-task-name">Task Name</p>
+        <p id="completion-time-spent">10 minutes completed</p>
+      </div>
+
+      <!-- Reinforcement message -->
+      <div class="completion-message">
+        <h2>You showed up.</h2>
+        <p>Consistency beats motivation.</p>
+      </div>
+
+      <!-- Optional simple stat (lightweight, not gamified too hard) -->
+      <div class="completion-stats">
+        <p id="completion-streak">Today’s commits: 1</p>
+      </div>
+
+      <!-- Continue button -->
+      <button onclick="returnToHomeFromCompletion()" class="task-btn">
+        Back to Home
+      </button>
     </div>
 
     <!-- Script -->
