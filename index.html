@@ -10,61 +10,61 @@
   </head>
 
   <body>
-    <!-- ========================= -->
     <!-- HOME SCREEN -->
-    <!-- ========================= -->
     <div id="home-screen" class="screen">
+      <!-- Title -->
       <h1 class="title">What will you commit to right now?</h1>
 
-      <!-- Suggested Tasks -->
-      <div class="suggestions">
-        <button id="task1" class="task-btn" onclick="selectTask(0)">
+      <!-- Task Grid -->
+      <div class="task-grid">
+        <!-- Suggestion 1 -->
+        <div class="task-card" onclick="selectTask(0)" id="task1">
           Study (10 min)
-        </button>
+        </div>
 
-        <button id="task2" class="task-btn" onclick="selectTask(1)">
+        <!-- Suggestion 2 -->
+        <div class="task-card" onclick="selectTask(1)" id="task2">
           Clean your desk (10 min)
-        </button>
+        </div>
 
-        <button id="task3" class="task-btn" onclick="selectTask(2)">
+        <!-- Suggestion 3 -->
+        <div class="task-card" onclick="selectTask(2)" id="task3">
           Walk (5 min)
-        </button>
+        </div>
+
+        <!-- Custom Task Card -->
+        <div class="task-card custom-card">
+          <input type="text" id="custom-task-name" placeholder="task name" />
+
+          <input
+            type="number"
+            id="custom-task-time"
+            placeholder="minutes"
+            min="1"
+          />
+
+          <button class="small-start-btn" onclick="createCustomTask()">
+            Start
+          </button>
+        </div>
       </div>
 
-      <!-- Shuffle Suggestions -->
-      <button id="shuffle-btn" class="secondary-btn" onclick="shuffleTasks()">
-        Shuffle suggestions
-      </button>
+      <!-- Bottom controls -->
+      <div class="home-controls">
+        <!-- shuffle icon button -->
+        <button id="shuffle-btn" class="icon-btn" onclick="shuffleTasks()">
+          &#10227;
+        </button>
 
-      <!-- Custom Task Section -->
-      <div class="custom-task">
-        <h3>Custom task</h3>
-
-        <!-- Task Name Input -->
-        <input type="text" id="custom-task-name" placeholder="Task name" />
-
-        <!-- Task Duration Input -->
-        <input
-          type="number"
-          id="custom-task-time"
-          placeholder="Minutes"
-          min="1"
-        />
-
-        <!-- Start Custom Task -->
-        <button class="task-btn" onclick="createCustomTask()">
-          Start custom task
+        <!-- too tired -->
+        <button
+          id="too-tired-btn"
+          class="text-btn hidden"
+          onclick="showEasyMode()"
+        >
+          too tired?
         </button>
       </div>
-
-      <!-- Easy Mode Button (Hidden Initially) -->
-      <button
-        id="too-tired-btn"
-        class="secondary-btn hidden"
-        onclick="showEasyMode()"
-      >
-        Too tired?
-      </button>
     </div>
 
     <!-- ========================= -->
@@ -151,29 +151,45 @@
     <!-- ========================= -->
     <div id="completion-screen" class="screen hidden">
       <!-- Main message -->
-      <h1 id="completion-title">Task Complete</h1>
+      <h1 id="completion-title" class="completion-item">Task Complete</h1>
 
       <!-- Task summary -->
       <div class="completion-summary">
-        <p id="completion-task-name">Task Name</p>
-        <p id="completion-time-spent">10 minutes completed</p>
+        <p id="completion-task-name" class="completion-item">Task Name</p>
+        <p id="completion-time-spent" class="completion-item">
+          10 minutes completed
+        </p>
       </div>
 
       <!-- Reinforcement message -->
       <div class="completion-message">
-        <h2>You showed up.</h2>
-        <p>Consistency beats motivation.</p>
+        <h2 class="completion-item" id="completion-identity">
+          You are someone who commits.
+        </h2>
+        <p class="completion-item" id="completion-reinforce">
+          Small actions compound.
+        </p>
       </div>
 
       <!-- Optional simple stat (lightweight, not gamified too hard) -->
       <div class="completion-stats">
-        <p id="completion-streak">Today’s commits: 1</p>
+        <p id="completion-streak" class="completion-item">Today’s commits: 1</p>
       </div>
 
       <!-- Continue button -->
-      <button onclick="returnToHomeFromCompletion()" class="task-btn">
+      <button
+        class="completion-item"
+        onclick="returnToHomeFromCompletion()"
+        class="task-btn"
+      >
         Back to Home
       </button>
+    </div>
+
+    <!-- COMMIT TRANSITION OVERLAY -->
+    <div id="commit-overlay" class="hidden">
+      <h1 id="commit-text">Committing...</h1>
+      <p id="commit-subtext"></p>
     </div>
 
     <!-- Script -->

@@ -24,6 +24,25 @@ let timeLeft = 0;
 let totalTime = 0;
 let isPaused = false;
 
+const identityMessages = [
+  "You are someone who follows through.",
+  "You are building discipline in real time.",
+  "You act even when motivation drops.",
+  "You don’t wait — you start.",
+];
+
+const reinforcementMessages = [
+  "Small actions compound.",
+  "Momentum is built, not found.",
+  "Consistency changes identity.",
+];
+
+const identity = identityMessages[Math.floor(Math.random() * identityMessages.length)];
+const reinforce = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
+
+document.getElementById("completion-identity").textContent = identity;
+document.getElementById("completion-reinforce").textContent = reinforce;
+
 /* ========================= */
 /* TASK DATA */
 /* ========================= */
@@ -101,22 +120,46 @@ function showEasyMode() {
 
 function selectTask(index) {
   selectedTask = currentTasks[index];
-  if (!selectedTask) return;
+  
+  if (!selectedTask) {
+    overlay.classList.add("hidden");
+    return;
+  }
 
-  // reset animation speed
-  document.getElementById("progress-circle").style.transition =
-    "stroke-dashoffset 0.05s linear";
 
-  // update hold screen text
-  document.getElementById("hold-task-name").textContent = selectedTask.name;
-  document.getElementById("hold-task-time").textContent =
-    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"}`;
+  const overlay = document.getElementById("commit-overlay");
+  const text = document.getElementById("commit-text");
+  const sub = document.getElementById("commit-subtext");
 
-  // switch screens
-  document.getElementById("home-screen").classList.add("hidden");
-  document.getElementById("hold-screen").classList.remove("hidden");
+  // lock in text immediately
+  text.textContent = "Committing...";
+  sub.textContent = selectedTask.name;
 
-  resetHoldState();
+  // show overlay instantly
+  overlay.classList.remove("hidden");
+  overlay.classList.add("commit-pulse");
+
+  // freeze interaction state (no accidental clicks)
+  document.getElementById("home-screen").style.pointerEvents = "none";
+
+  setTimeout(() => {
+
+    // switch screens
+    document.getElementById("home-screen").classList.add("hidden");
+    document.getElementById("hold-screen").classList.remove("hidden");
+
+    overlay.classList.add("hidden");
+    overlay.classList.remove("commit-pulse");
+
+    document.getElementById("home-screen").style.pointerEvents = "auto";
+
+    // update hold UI
+    document.getElementById("hold-task-name").textContent = selectedTask.name;
+    document.getElementById("hold-task-time").textContent =
+      `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"}`;
+
+    resetHoldState();
+  }, 450);
 }
 
 /* ========================= */
@@ -251,7 +294,7 @@ function startLockAnimation() {
 function startTimer(minutes) {
   clearInterval(timerInterval);
 
-  totalTime = minutes * 60;
+  totalTime =  5;//minutes * 60;  RIMER FIX HEREEREHER LATER ER FIX HEREEREHER LATER
   timeLeft = totalTime;
   isPaused = false;
 
@@ -288,25 +331,42 @@ function updateTimerUI() {
 }
 
 function timerFinished() {
-commitCount++;
-document.getElementById("completion-streak").textContent =
-  `Today’s commits: ${commitCount}`;
-
+    document.getElementById("completion-screen").style.background = "#0f0f0f";
   document.getElementById("timer-screen").classList.add("hidden");
   document.getElementById("completion-screen").classList.remove("hidden");
 
-  // populate completion screen
-  document.getElementById("completion-task-name").textContent =
-    selectedTask.name;
+  const title = document.getElementById("completion-title");
+  const task = document.getElementById("completion-task-name");
+  const time = document.getElementById("completion-time-spent");
+  const streak = document.getElementById("completion-streak");
 
-  document.getElementById("completion-time-spent").textContent =
-    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"} completed`;
+  // set values
+  task.textContent = selectedTask.name;
 
-  document.getElementById("completion-title").textContent = "Task Complete";
+  time.textContent = `${selectedTask.time} ${
+    selectedTask.time === 1 ? "minute" : "minutes"
+  } completed`;
 
-  // simple reinforcement stat (placeholder for now)
-  document.getElementById("completion-streak").textContent =
-    "Today’s commits: 1";
+  streak.textContent = `Commit streak today: ${commitCount + 1}`;
+commitCount++;
+
+setTimeout(() => {
+  document.getElementById("completion-screen").style.background = "#111";
+}, 300);
+
+  // reset animation state
+  const items = document.querySelectorAll(".completion-item");
+  items.forEach(el => el.classList.remove("show"));
+
+  // staged reveal (feels intentional, not random fade-in)
+  const delays = [150, 450, 750, 1050, 1350, 1650];
+
+  items.forEach((el, i) => {
+    setTimeout(() => {
+      el.classList.add("show");
+    }, delays[i]);
+  });
+
 }
 
 function returnToHome() {
