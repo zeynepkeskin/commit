@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Commit</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- HOME SCREEN -->
+    <div id="home-screen" class="screen">
+      <h1 class="title">What will you commit to right now?</h1>
+
+      <!-- Suggested tasks -->
+      <div class="suggestions">
+        <button id="task1" class="task-btn" onclick="selectTask('Study', 10)">
+          Study (10 min)
+        </button>
+        <button id="task2" class="task-btn" onclick="selectTask('Clean', 10)">
+          Clean (10 min)
+        </button>
+        <button id="task3" class="task-btn" onclick="selectTask('Walk', 5)">
+          Walk (5 min)
+        </button>
+      </div>
+
+      <!-- Shuffle button -->
+      <button id="shuffle-btn" class="secondary-btn" onclick="shuffleTasks()">
+        Shuffle suggestions
+      </button>
+
+      <!-- Custom task -->
+      <div class="custom-task">
+        <h3>Custom task</h3>
+
+        <input type="text" id="custom-task-name" placeholder="Task name" />
+
+        <input
+          type="number"
+          id="custom-task-time"
+          placeholder="Minutes"
+          min="1"
+        />
+
+        <button class="task-btn" onclick="createCustomTask()">
+          Start custom task
+        </button>
+      </div>
+
+      <!-- Hidden initially, revealed after shuffle threshold -->
+      <button
+        id="too-tired-btn"
+        class="secondary-btn hidden"
+        onclick="showEasyMode()"
+      >
+        Too tired?
+      </button>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
