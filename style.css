@@ -1,3 +1,7 @@
+/* ========================= */
+/* GLOBAL STYLES */
+/* ========================= */
+
 body {
   font-family: Arial;
   text-align: center;
@@ -5,14 +9,17 @@ body {
   color: white;
 }
 
+/* Screen layout */
 .screen {
   margin-top: 100px;
 }
 
+/* Utility */
 .hidden {
   display: none;
 }
 
+/* Buttons */
 button {
   padding: 15px 25px;
   margin: 10px;
@@ -21,9 +28,11 @@ button {
 }
 
 
+/* ========================= */
+/* HOLD AREA + PROGRESS RING */
+/* ========================= */
 
-
-
+/* Main hold interaction zone */
 .hold-area {
   height: 300px;
   display: flex;
@@ -31,63 +40,72 @@ button {
   align-items: center;
 }
 
+/* Container for circular progress */
 .progress-container {
   width: 160px;
   height: 160px;
+
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Rotate so progress starts at top */
 .progress-ring {
   transform: rotate(-90deg);
   display: block;
 }
 
+/* Background circle */
 .progress-ring-bg {
   fill: none;
   stroke: #333;
   stroke-width: 6;
 }
 
+/* Animated progress circle */
 .progress-ring-fill {
   fill: none;
   stroke: limegreen;
   stroke-width: 6;
   stroke-linecap: round;
 
+  /* full circumference setup */
   stroke-dasharray: 440;
   stroke-dashoffset: 440;
 }
 
-.progress-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
+/* ========================= */
+/* TIMER BAR */
+/* ========================= */
 
-
+/* Progress bar container */
 .timer-bar-container {
   width: 200px;
   height: 10px;
   background: #333;
+
   margin: 20px auto;
   border-radius: 10px;
   overflow: hidden;
 }
 
+/* Progress fill */
 .timer-bar {
   height: 100%;
   width: 0%;
   background: limegreen;
+
   transition: width 0.2s linear;
 }
 
+/* Controls section */
 .timer-controls {
   margin-top: 20px;
 }
 
+/* Pause message */
 #pause-message {
   color: #aaa;
   margin-top: 10px;

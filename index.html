@@ -1,39 +1,57 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- Meta / Title -->
     <meta charset="UTF-8" />
     <title>Commit</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
+    <!-- ========================= -->
     <!-- HOME SCREEN -->
+    <!-- ========================= -->
     <div id="home-screen" class="screen">
       <h1 class="title">What will you commit to right now?</h1>
 
-      <!-- Suggested tasks -->
+      <!-- Suggested Tasks -->
       <div class="suggestions">
         <button id="task1" class="task-btn" onclick="selectTask(0)">
           Study (10 min)
         </button>
+
         <button id="task2" class="task-btn" onclick="selectTask(1)">
           Clean your desk (10 min)
         </button>
+
         <button id="task3" class="task-btn" onclick="selectTask(2)">
           Walk (5 min)
         </button>
       </div>
 
-      <!-- Shuffle button -->
-      <button id="shuffle-btn" class="secondary-btn" onclick="shuffleTasks()">
+      <!-- Shuffle Suggestions -->
+      <button
+        id="shuffle-btn"
+        class="secondary-btn"
+        onclick="shuffleTasks()"
+      >
         Shuffle suggestions
       </button>
 
-      <!-- Custom task -->
+      <!-- Custom Task Section -->
       <div class="custom-task">
         <h3>Custom task</h3>
 
-        <input type="text" id="custom-task-name" placeholder="Task name" />
+        <!-- Task Name Input -->
+        <input
+          type="text"
+          id="custom-task-name"
+          placeholder="Task name"
+        />
 
+        <!-- Task Duration Input -->
         <input
           type="number"
           id="custom-task-time"
@@ -41,12 +59,16 @@
           min="1"
         />
 
-        <button class="task-btn" onclick="createCustomTask()">
+        <!-- Start Custom Task -->
+        <button
+          class="task-btn"
+          onclick="createCustomTask()"
+        >
           Start custom task
         </button>
       </div>
 
-      <!-- Hidden initially, revealed after shuffle threshold -->
+      <!-- Easy Mode Button (Hidden Initially) -->
       <button
         id="too-tired-btn"
         class="secondary-btn hidden"
@@ -56,22 +78,24 @@
       </button>
     </div>
 
+    <!-- ========================= -->
     <!-- HOLD TO COMMIT SCREEN -->
+    <!-- ========================= -->
     <div id="hold-screen" class="screen hidden">
-      <!-- Task info -->
       <div class="hold-header">
+        <!-- Selected Task Info -->
         <h1 id="hold-task-name">Task Name</h1>
         <p id="hold-task-time">10 minutes</p>
 
-        <!-- Instruction -->
+        <!-- Instructions -->
         <div class="hold-instruction">
           <h2>Hold to Commit</h2>
           <p>Stay pressed until the circle fills</p>
         </div>
 
-        <!-- Main interaction zone -->
+        <!-- Hold Interaction Area -->
         <div id="hold-area" class="hold-area">
-          <!-- Progress indicator (visual feedback) -->
+          <!-- Circular Progress Indicator -->
           <div class="progress-container">
             <svg
               class="progress-ring"
@@ -79,8 +103,15 @@
               height="160"
               viewBox="0 0 160 160"
             >
-              <circle class="progress-ring-bg" cx="80" cy="80" r="70"></circle>
+              <!-- Background Circle -->
+              <circle
+                class="progress-ring-bg"
+                cx="80"
+                cy="80"
+                r="70"
+              ></circle>
 
+              <!-- Animated Progress Circle -->
               <circle
                 id="progress-circle"
                 class="progress-ring-fill"
@@ -94,37 +125,50 @@
       </div>
     </div>
 
+    <!-- ========================= -->
     <!-- TIMER SCREEN -->
+    <!-- ========================= -->
     <div id="timer-screen" class="screen hidden">
-      <!-- Task title -->
+      <!-- Task Title -->
       <h1 id="timer-task-name">Task Name</h1>
 
-      <!-- Timer display -->
+      <!-- Countdown Display -->
       <div class="timer-display">
         <h2 id="timer-countdown">10:00</h2>
       </div>
 
-      <!-- Status text -->
+      <!-- Status Message -->
       <p id="timer-status">Stay focused.</p>
 
-      <!-- Optional progress bar (simple fallback visual) -->
+      <!-- Progress Bar (Fallback Visual) -->
       <div class="timer-bar-container">
         <div id="timer-bar" class="timer-bar"></div>
       </div>
 
+      <!-- Timer Controls -->
       <div class="timer-controls">
-        <button id="pause-btn" onclick="toggleTimer()">Pause</button>
+        <!-- Pause / Resume -->
+        <button id="pause-btn" onclick="toggleTimer()">
+          Pause
+        </button>
 
-        <button id="quit-btn" class="hidden" onclick="quitToHome()">
+        <!-- Quit (Hidden Initially) -->
+        <button
+          id="quit-btn"
+          class="hidden"
+          onclick="quitToHome()"
+        >
           Quit
         </button>
 
+        <!-- Motivation Message (Hidden Initially) -->
         <p id="pause-message" class="hidden">
           Don’t quit now. Small steps still count.
         </p>
       </div>
     </div>
 
+    <!-- Script -->
     <script src="script.js"></script>
   </body>
 </html>

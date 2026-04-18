@@ -1,22 +1,32 @@
+/* ========================= */
+/* GLOBAL STATE */
+/* ========================= */
+
 let shuffleCount = 0;
 let mode = "normal";
 let currentTasks = [];
 let selectedTask = null;
 
+/* Hold system */
 let holdProgress = 0;
 let holdInterval = null;
 let isHolding = false;
 let holdStartTime = 0;
 
+/* Radial progress constants */
 const radius = 70;
 const circumference = 2 * Math.PI * radius;
 
+/* Timer system */
 let timerInterval = null;
 let timeLeft = 0;
 let totalTime = 0;
 let isPaused = false;
 
-/* ---------------- TASK DATA ---------------- */
+
+/* ========================= */
+/* TASK DATA */
+/* ========================= */
 
 const tasks = {
   normal: [
@@ -34,7 +44,10 @@ const tasks = {
   ],
 };
 
-/* ---------------- INIT ---------------- */
+
+/* ========================= */
+/* INIT */
+/* ========================= */
 
 window.onload = () => {
   shuffleTasks();
@@ -42,16 +55,23 @@ window.onload = () => {
   resetRadial();
 };
 
-/* ---------------- SHUFFLE ---------------- */
+
+/* ========================= */
+/* TASK SHUFFLING */
+/* ========================= */
 
 function shuffleTasks() {
   shuffleCount++;
 
   const pool = tasks[mode];
+
+  // randomize task order
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
+  // take first 3 tasks
   currentTasks = shuffled.slice(0, 3);
 
+  // update UI
   document.getElementById("task1").textContent =
     `${currentTasks[0].name} (${currentTasks[0].time} min)`;
 
@@ -61,12 +81,16 @@ function shuffleTasks() {
   document.getElementById("task3").textContent =
     `${currentTasks[2].name} (${currentTasks[2].time} min)`;
 
+  // reveal "too tired" option after multiple shuffles
   if (shuffleCount >= 4 && mode === "normal") {
     document.getElementById("too-tired-btn").classList.remove("hidden");
   }
 }
 
-/* ---------------- MODE ---------------- */
+
+/* ========================= */
+/* MODE SWITCHING */
+/* ========================= */
 
 function showEasyMode() {
   mode = "tired";
@@ -74,35 +98,45 @@ function showEasyMode() {
   shuffleTasks();
 }
 
-/* ---------------- TASK SELECT ---------------- */
+
+/* ========================= */
+/* TASK SELECTION */
+/* ========================= */
 
 function selectTask(index) {
   selectedTask = currentTasks[index];
   if (!selectedTask) return;
 
+  // reset animation speed
   document.getElementById("progress-circle").style.transition =
     "stroke-dashoffset 0.05s linear";
 
+  // update hold screen text
   document.getElementById("hold-task-name").textContent = selectedTask.name;
-
   document.getElementById("hold-task-time").textContent =
     `${selectedTask.time} minutes`;
 
+  // switch screens
   document.getElementById("home-screen").classList.add("hidden");
   document.getElementById("hold-screen").classList.remove("hidden");
 
   resetHoldState();
 }
 
-/* ---------------- HOLD SYSTEM ---------------- */
+
+/* ========================= */
+/* HOLD SYSTEM */
+/* ========================= */
 
 function initHoldEvents() {
   const holdArea = document.getElementById("hold-area");
 
+  // mouse events
   holdArea.addEventListener("mousedown", startHold);
   holdArea.addEventListener("mouseup", stopHold);
   holdArea.addEventListener("mouseleave", stopHold);
 
+  // touch events (mobile)
   holdArea.addEventListener("touchstart", startHold);
   holdArea.addEventListener("touchend", stopHold);
 }
@@ -117,9 +151,11 @@ function startHold() {
   holdInterval = setInterval(() => {
     const elapsed = Date.now() - holdStartTime;
 
+    // accelerating progress (ramps up over time)
     const speedMultiplier = 1 + elapsed / 1000;
     holdProgress += speedMultiplier * 0.8;
 
+    // completion check
     if (holdProgress >= 100) {
       holdProgress = 100;
       updateHoldUI();
@@ -129,27 +165,31 @@ function startHold() {
     }
 
     updateHoldUI();
-  }, 16);
+  }, 16); // ~60fps
 }
 
 function stopHold() {
   isHolding = false;
+
   clearInterval(holdInterval);
   holdInterval = null;
 
+  // reset if not completed
   if (holdProgress < 100) {
     holdProgress = 0;
     updateHoldUI();
   }
 }
 
-/* ---------------- RADIAL PROGRESS ---------------- */
+
+/* ========================= */
+/* RADIAL PROGRESS */
+/* ========================= */
 
 function updateHoldUI() {
   const circle = document.getElementById("progress-circle");
 
   const offset = circumference - (holdProgress / 100) * circumference;
-
   circle.style.strokeDashoffset = offset;
 }
 
@@ -160,7 +200,11 @@ function resetRadial() {
   circle.style.strokeDashoffset = circumference;
   circle.style.transition = "stroke-dashoffset 0.05s linear";
 }
-/* ---------------- HOLD RESET ---------------- */
+
+
+/* ========================= */
+/* HOLD RESET */
+/* ========================= */
 
 function resetHoldState() {
   holdProgress = 0;
@@ -171,7 +215,10 @@ function resetHoldState() {
   circle.style.strokeDashoffset = circumference;
 }
 
-/* ---------------- LOCK + TRANSITION ---------------- */
+
+/* ========================= */
+/* LOCK ANIMATION + TRANSITION */
+/* ========================= */
 
 function startLockAnimation() {
   const circle = document.getElementById("progress-circle");
@@ -179,7 +226,7 @@ function startLockAnimation() {
 
   text.textContent = "Starting...";
 
-  // Phase 2: quick full sweep animation
+  // quick finishing sweep animation
   circle.style.transition = "stroke-dashoffset 0.4s ease-out";
   circle.style.transition = "stroke-dashoffset 0.4s ease-out";
   circle.style.strokeDashoffset = 0;
@@ -200,7 +247,10 @@ function goToTimerScreen() {
   startTimer(selectedTask.time);
 }
 
-/* ---------------- TIMER ---------------- */
+
+/* ========================= */
+/* TIMER SYSTEM */
+/* ========================= */
 
 function startTimer(minutes) {
   clearInterval(timerInterval);
@@ -228,10 +278,11 @@ function updateTimerUI() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
+  // update text display
   document.getElementById("timer-countdown").textContent =
     `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-  // optional progress bar
+  // update progress bar
   const progress = 1 - timeLeft / totalTime;
   const bar = document.getElementById("timer-bar");
 
@@ -255,6 +306,11 @@ function returnToHome() {
 
   selectedTask = null;
 }
+
+
+/* ========================= */
+/* TIMER CONTROLS */
+/* ========================= */
 
 function toggleTimer() {
   isPaused = !isPaused;
@@ -289,4 +345,35 @@ function resetTimerUI() {
   document.getElementById("pause-btn").textContent = "Pause";
   document.getElementById("quit-btn").classList.add("hidden");
   document.getElementById("pause-message").classList.add("hidden");
+}
+
+
+/* ========================= */
+/* CUSTOM TASK */
+/* ========================= */
+
+function createCustomTask() {
+  const name = document.getElementById("custom-task-name").value;
+  const time = parseInt(document.getElementById("custom-task-time").value);
+
+  if (!name || !time || time <= 0) return;
+
+  selectedTask = {
+    name: name,
+    time: time
+  };
+
+  // clear inputs (UX)
+  document.getElementById("custom-task-name").value = "";
+  document.getElementById("custom-task-time").value = "";
+
+  // go directly to hold screen
+  document.getElementById("hold-task-name").textContent = selectedTask.name;
+  document.getElementById("hold-task-time").textContent =
+    `${selectedTask.time} minutes`;
+
+  document.getElementById("home-screen").classList.add("hidden");
+  document.getElementById("hold-screen").classList.remove("hidden");
+
+  resetHoldState();
 }
