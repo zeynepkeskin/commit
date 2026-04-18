@@ -3,6 +3,20 @@ let mode = "normal";
 let currentTasks = [];
 let selectedTask = null;
 
+let holdProgress = 0;
+let holdInterval = null;
+let isHolding = false;
+let holdStartTime = 0;
+
+
+const holdArea = document.getElementById("hold-area");
+holdArea.addEventListener("mousedown", startHold);
+holdArea.addEventListener("mouseup", stopHold);
+holdArea.addEventListener("mouseleave", stopHold);
+
+// mobile support
+holdArea.addEventListener("touchstart", startHold);
+holdArea.addEventListener("touchend", stopHold);
 
 const tasks = {
   normal: [
@@ -65,4 +79,68 @@ function selectTask(index) {
     document.getElementById("home-screen").classList.add("hidden");
     document.getElementById("hold-screen").classList.remove("hidden");
 }
+
+function startHold() {
+  if (isHolding) return;
+
+  isHolding = true;
+  holdProgress = 0;
+  holdStartTime = Date.now();
+
+  holdInterval = setInterval(() => {
+    const elapsed = Date.now() - holdStartTime;
+
+    // acceleration curve 
+    // starts slow, speeds up over time
+    const speedMultiplier = 1 + elapsed / 1000; // ramps up
+
+    holdProgress += speedMultiplier * 0.8;
+
+    if (holdProgress >= 100) {
+      holdProgress = 100;
+      updateHoldUI();
+      startLockAnimation();
+      stopHold();
+      return;
+    }
+
+    updateHoldUI();
+  }, 16); // ~60fps
+}
+
+function stopHold() {
+  isHolding = false;
+  clearInterval(holdInterval);
+  holdInterval = null;
+
+  if (holdProgress < 100) {
+    holdProgress = 0;
+    updateHoldUI();
+  }
+}
+
+function updateHoldUI() {
+  const circle = document.getElementById("progress-circle");
+  circle.style.transform = `scale(${holdProgress / 100})`;
+}
+
+function startLockAnimation() {
+  const circle = document.getElementById("progress-circle");
+  const text = document.getElementById("hold-task-name");
+
+  text.textContent = "Starting...";
+
+  circle.classList.add("lock-spin");
+
+  setTimeout(() => {
+    goToNextScreen();
+  }, 600);
+}
+
+function goToNextScreen() {
+  document.getElementById("hold-screen").classList.add("hidden");
+  // placeholder for next screen (timer screen later)
+  alert("Task started: " + selectedTask.name);
+}
+
 
