@@ -4,6 +4,11 @@
 *{
   font-family: "Comfortaa", sans-serif;
 }
+body {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none;     /* IE/Edge old */
+  user-select: none;         /* modern browsers */
+}
 :root {
   --bg-0: #0b0a10;
   --bg-1: #120f1a;
@@ -469,3 +474,152 @@ body {
   transform: translateY(0);
   color: var(--text-dim);
 }
+
+/* ========================= */
+/* COMPLETION REDESIGN */
+/* ========================= */
+
+.completion-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  width: min(1000px, 90vw);
+  margin: 0 auto;
+  gap: 60px;
+  padding-top: 40px;
+}
+
+/* LEFT SIDE */
+.completion-left {
+  flex: 1;
+  text-align: left;
+}
+
+.completion-title {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* task box */
+.completion-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.completion-main {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.completion-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+/* button (fix ugly default look) */
+.completion-button {
+  background: var(--accent);
+  border: none;
+  color: #120d1a;
+
+  padding: 12px 18px;
+  border-radius: 12px;
+
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.completion-button:hover {
+  transform: translateY(-2px);
+  background: #8b5cf6;
+}
+
+/* RIGHT SIDE */
+.completion-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* cards */
+.completion-card {
+  background: rgba(23, 19, 33, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+
+  padding: 16px;
+  text-align: left;
+}
+
+/* highlight phrase */
+.completion-highlight {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* session items */
+#session-history p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.completion-item {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.completion-item.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.completion-left,
+.completion-right {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.completion-box,
+.completion-card {
+  margin: 0;
+}
+
+.screen {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.task-card,
+button,
+.icon-btn,
+.text-btn {
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-1px);
+}
+
+.completion-title {
+  font-size: 40px;
+  letter-spacing: -1px;
+}
+
+.completion-sub,
+.completion-card {
+  color: var(--text-dim);
+}
+

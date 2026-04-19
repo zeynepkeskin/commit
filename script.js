@@ -48,6 +48,7 @@ window.onload = () => {
   initHoldEvents();
   resetRadial();
   initTaskHover();
+  updateTiredButton();
 
   reinforce =
     reinforcementMessages[
@@ -158,6 +159,7 @@ setTimeout(() => {
 }, 150);
   }
   animateTaskShuffle();
+  updateTiredButton();
 }
 
 
@@ -400,8 +402,6 @@ function timerFinished() {
   document.getElementById("timer-screen").classList.add("hidden");
   document.getElementById("completion-screen").classList.remove("hidden");
 
-  playScreenAnimation("completion-screen");
-
   const title = document.getElementById("completion-title");
   const task = document.getElementById("completion-task-name");
   const time = document.getElementById("completion-time-spent");
@@ -416,21 +416,22 @@ function timerFinished() {
   document.getElementById("completion-streak").textContent =
     `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
 
-  // reset animation state
-  const items = document.querySelectorAll(".completion-item");
-  items.forEach((el) => el.classList.remove("show"));
+  requestAnimationFrame(() => {
+  const screen = document.getElementById("completion-screen");
 
-  // staged reveal (feels intentional, not random fade-in)
-  const delays = [150, 450, 750, 1050, 1350, 1650];
+  const items = screen.querySelectorAll(".completion-item");
 
   items.forEach((el, i) => {
+    el.classList.remove("show");
+    void el.offsetWidth; // reset animation
+
     setTimeout(() => {
       el.classList.add("show");
-    }, delays[i]);
+    }, 120 + i * 90);
   });
-  setTimeout(() => {
+
   renderSessionHistory();
-}, 50);
+});
 }
 
 function renderSessionHistory() {
@@ -453,7 +454,7 @@ function renderSessionHistory() {
       () => {
         el.classList.add("show");
       },
-      1800 + index * 200,
+      500 + index * 200,
     );
   });
 }
@@ -621,4 +622,29 @@ function initTaskHover() {
   el2.addEventListener("mouseleave", hide);
   el3.addEventListener("mouseleave", hide);
   custom.addEventListener("mouseleave", hide);
+}
+
+function toggleTiredMode() {
+  if (mode === "normal") {
+    mode = "tired";
+    shuffleCount = 0;
+  } else {
+    mode = "normal";
+    shuffleCount = 0;
+  }
+
+  shuffleTasks();
+  updateTiredButton();
+}
+
+function updateTiredButton() {
+  const btn = document.getElementById("too-tired-btn");
+
+  if (!btn) return;
+
+  if (mode === "tired") {
+    btn.textContent = "back to normal";
+  } else {
+    btn.textContent = "too tired?";
+  }
 }

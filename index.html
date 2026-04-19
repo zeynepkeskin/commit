@@ -64,7 +64,7 @@
     <button
       id="too-tired-btn"
       class="text-btn fade-in hidden"
-      onclick="showEasyMode()"
+      onclick="toggleTiredMode()"
     >
       too tired?
     </button>
@@ -155,44 +155,55 @@
     <!-- ========================= -->
     <!-- COMPLETION SCREEN -->
     <!-- ========================= -->
-    <div id="completion-screen" class="screen hidden">
-      <!-- Main message -->
-      <h1 id="completion-title" class="completion-item">Task Complete</h1>
+<div id="completion-screen" class="screen hidden">
 
-      <!-- Task summary -->
-      <div class="completion-summary">
-        <p id="completion-task-name" class="completion-item">Task Name</p>
-        <p id="completion-time-spent" class="completion-item">
+  <div class="completion-layout">
+
+    <!-- LEFT -->
+    <div class="completion-left">
+
+      <h1 class="completion-title completion-item">Task Complete</h1>
+
+      <div class="completion-box completion-item">
+        <div id="completion-task-name" class="completion-main">Task Name</div>
+        <div id="completion-time-spent" class="completion-sub">
           10 minutes completed
-        </p>
+        </div>
       </div>
 
-      <!-- Reinforcement message -->
-      <div class="completion-message">
-        <p class="completion-item" id="completion-reinforce">
-          Small actions compound.
-        </p>
-      </div>
-
-      <!-- Optional simple stat (lightweight, not gamified too hard) -->
-      <div class="completion-stats">
-        <p id="completion-streak" class="completion-item">Today’s commits: 1</p>
-      </div>
-     
-      <!-- Continue button -->
       <button
-        class="completion-item"
         onclick="returnToHomeFromCompletion()"
-        class="task-btn"
+        class="completion-button completion-item"
       >
         Back to Home
       </button>
-      <div class="completion-history">
-  <h3 class="anim-item">Today’s sessions</h3>
-  <div id="session-history"></div>
-</div>
 
     </div>
+
+    <!-- RIGHT -->
+    <div class="completion-right">
+
+      <div class="completion-card completion-item">
+        <div id="completion-reinforce" class="completion-highlight">
+          Small actions compound.
+        </div>
+      </div>
+
+      <div class="completion-card completion-item">
+        <div id="completion-streak">
+          Today’s commits: 1
+        </div>
+      </div>
+
+      <div class="completion-card completion-item">
+        <h3 style="margin:0 0 8px 0;">Today’s sessions</h3>
+        <div id="session-history"></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
     <!-- COMMIT TRANSITION OVERLAY -->
     <div id="commit-overlay" class="hidden">
