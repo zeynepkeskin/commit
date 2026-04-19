@@ -623,3 +623,118 @@ button,
   color: var(--text-dim);
 }
 
+
+
+#done-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 10, 16, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+#done-overlay h1 {
+  font-size: 42px;
+  margin-bottom: 20px;
+}
+
+#done-overlay button {
+  background: var(--accent);
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+
+
+#done-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(11, 10, 16);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+
+  backdrop-filter: blur(10px);
+}
+
+/* container */
+.done-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+
+  animation: donePop 0.35s ease-out;
+}
+
+/* small badge */
+.done-badge {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--accent);
+
+  padding: 6px 10px;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+
+  opacity: 0.9;
+}
+
+/* main text */
+.done-title {
+  font-size: 42px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* subtext */
+.done-subtext {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* button */
+.done-button {
+  margin-top: 10px;
+
+  background: var(--accent);
+  border: none;
+  color: #120d1a;
+
+  padding: 12px 18px;
+  border-radius: 12px;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.done-button:hover {
+  transform: translateY(-2px);
+  background: #8b5cf6;
+}
+
+/* animation */
+@keyframes donePop {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.done-badge {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.15);
+}

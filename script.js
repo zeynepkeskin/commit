@@ -69,6 +69,21 @@ const tasks = {
     { name: "Clean your desk", time: 10 },
     { name: "Read", time: 10 },
     { name: "Stretch", time: 5 },
+
+    { name: "Review notes", time: 10 },
+    { name: "Do homework", time: 15 },
+    { name: "Start assignment", time: 10 },
+    { name: "Organize backpack", time: 5 },
+    { name: "Plan tomorrow", time: 10 },
+    { name: "Practice math problems", time: 10 },
+    { name: "Write a paragraph", time: 10 },
+    { name: "Flashcards review", time: 10 },
+    { name: "Clean your room (quick)", time: 10 },
+    { name: "Reply to emails/messages", time: 5 },
+    { name: "Fix one small mistake", time: 5 },
+    { name: "Watch lecture/video", time: 10 },
+    { name: "Work on project", time: 15 },
+    { name: "Revise weak topic", time: 10 },
   ],
 
   tired: [
@@ -76,6 +91,18 @@ const tasks = {
     { name: "Sit up", time: 1 },
     { name: "Open notes", time: 1 },
     { name: "Take 3 breaths", time: 1 },
+
+    { name: "Stand up", time: 1 },
+    { name: "Wash face", time: 1 },
+    { name: "Stretch arms", time: 1 },
+    { name: "Look away from screen", time: 1 },
+    { name: "Fix posture", time: 1 },
+    { name: "Open window", time: 1 },
+    { name: "Write first sentence", time: 1 },
+    { name: "Read one page", time: 1 },
+    { name: "Put phone down", time: 1 },
+    { name: "Reset desk area", time: 1 },
+    { name: "Start timer again", time: 1 },
   ],
 };
 
@@ -352,7 +379,7 @@ function startLockAnimation() {
 function startTimer(minutes) {
   clearInterval(timerInterval);
 
-  totalTime = 2; //minutes * 60; RIMER FIX LATER
+  totalTime = minutes * 60; 
   timeLeft = totalTime;
   isPaused = false;
 
@@ -388,42 +415,22 @@ function updateTimerUI() {
   }
 }
 
-function timerFinished() {
-  updateStreak();
-  commitCount++;
-  sessionHistory.unshift({
-    name: selectedTask.name,
-    time: selectedTask.time,
-  });
-
-  sessionHistory = sessionHistory.slice(0, 5); // keep last 5
-
-  localStorage.setItem("session-history", JSON.stringify(sessionHistory));
-  document.getElementById("timer-screen").classList.add("hidden");
-  document.getElementById("completion-screen").classList.remove("hidden");
-
-  const title = document.getElementById("completion-title");
-  const task = document.getElementById("completion-task-name");
-  const time = document.getElementById("completion-time-spent");
-
-  // set values
-  task.textContent = selectedTask.name;
-
-  time.textContent = `${selectedTask.time} ${
-    selectedTask.time === 1 ? "minute" : "minutes"
-  } completed`;
-
-  document.getElementById("completion-streak").textContent =
-    `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
-
-  requestAnimationFrame(() => {
+function showCompletion() {
   const screen = document.getElementById("completion-screen");
+
+  document.getElementById("done-overlay").classList.add("hidden");
+  screen.classList.remove("hidden");
+
+  // IMPORTANT: force layout before animation starts
+  void screen.offsetHeight;
+
+  playScreenAnimation("completion-screen");
 
   const items = screen.querySelectorAll(".completion-item");
 
   items.forEach((el, i) => {
     el.classList.remove("show");
-    void el.offsetWidth; // reset animation
+    void el.offsetWidth;
 
     setTimeout(() => {
       el.classList.add("show");
@@ -431,7 +438,33 @@ function timerFinished() {
   });
 
   renderSessionHistory();
-});
+}
+
+function timerFinished() {
+  updateStreak();
+  commitCount++;
+
+  sessionHistory.unshift({
+    name: selectedTask.name,
+    time: selectedTask.time,
+  });
+
+  sessionHistory = sessionHistory.slice(0, 5);
+  localStorage.setItem("session-history", JSON.stringify(sessionHistory));
+
+  document.getElementById("timer-screen").classList.add("hidden");
+  document.getElementById("done-overlay").classList.remove("hidden");
+
+  const task = document.getElementById("completion-task-name");
+  const time = document.getElementById("completion-time-spent");
+
+  task.textContent = selectedTask.name;
+  time.textContent = `${selectedTask.time} ${
+    selectedTask.time === 1 ? "minute" : "minutes"
+  } completed`;
+
+  document.getElementById("completion-streak").textContent =
+    `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
 }
 
 function renderSessionHistory() {
