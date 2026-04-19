@@ -2,21 +2,28 @@
 /* GLOBAL STATE */
 /* ========================= */
 
+let sessionHistory = JSON.parse(localStorage.getItem("session-history")) || [];
+
 let streak = parseInt(localStorage.getItem("commit-streak")) || 0;
 let lastCommitDate = localStorage.getItem("last-commit-date") || null;
-
 
 let shuffleCount = 0;
 let mode = "normal";
 let currentTasks = [];
 let selectedTask = null;
-let commitCount = 0; 
+let commitCount = 0;
 
 /* Hold system */
 let holdProgress = 0;
 let holdInterval = null;
 let isHolding = false;
 let holdStartTime = 0;
+
+const taskReframes = {
+  Study: "You build focus by starting.",
+  "Clean your desk": "Your environment shapes your mind.",
+  Walk: "Momentum starts with movement.",
+};
 
 /* Radial progress constants */
 const radius = 70;
@@ -28,31 +35,27 @@ let timeLeft = 0;
 let totalTime = 0;
 let isPaused = false;
 
-const identityMessages = [
-  "You are someone who follows through.",
-  "You are building discipline in real time.",
-  "You act even when motivation drops.",
-  "You don’t wait — you start.",
-];
-
 const reinforcementMessages = [
   "Small actions compound.",
   "Momentum is built, not found.",
   "Consistency changes identity.",
 ];
 
-let identity, reinforce;
+let reinforce;
 
 window.onload = () => {
   shuffleTasks();
   initHoldEvents();
   resetRadial();
+  initTaskHover();
 
-  identity = identityMessages[Math.floor(Math.random() * identityMessages.length)];
-  reinforce = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
+  reinforce =
+    reinforcementMessages[
+      Math.floor(Math.random() * reinforcementMessages.length)
+    ];
 
-  document.getElementById("completion-identity").textContent = identity;
   document.getElementById("completion-reinforce").textContent = reinforce;
+  playScreenAnimation("home-screen");
 };
 
 /* ========================= */
@@ -79,10 +82,48 @@ const tasks = {
 /* INIT */
 /* ========================= */
 
-
 /* ========================= */
 /* TASK SHUFFLING */
 /* ========================= */
+function playScreenAnimation(rootId) {
+  const root = document.getElementById(rootId);
+  if (!root) return;
+
+  const items = root.querySelectorAll(".anim-item");
+
+  items.forEach((el, i) => {
+    el.classList.remove("anim-play");
+
+    // force reflow so animation can restart
+    void el.offsetWidth;
+
+    setTimeout(() => {
+      el.classList.add("anim-play");
+    }, i * 40);
+  });
+}
+function animateTaskShuffle() {
+  const tasks = [
+    document.getElementById("task1"),
+    document.getElementById("task2"),
+    document.getElementById("task3"),
+  ];
+
+  tasks.forEach((el, i) => {
+    if (!el) return;
+
+    // reset animation
+    el.classList.remove("anim-play");
+
+    // force reflow so animation can restart
+    void el.offsetWidth;
+
+    // staggered re-entry
+    setTimeout(() => {
+      el.classList.add("anim-play");
+    }, i * 70);
+  });
+}
 
 function shuffleTasks() {
   shuffleCount++;
@@ -107,9 +148,18 @@ function shuffleTasks() {
 
   // reveal "too tired" option after multiple shuffles
   if (shuffleCount >= 4 && mode === "normal") {
-    document.getElementById("too-tired-btn").classList.remove("hidden");
+    const tiredBtn = document.getElementById("too-tired-btn");
+
+tiredBtn.classList.remove("hidden");
+
+// allow DOM to render before triggering animation
+setTimeout(() => {
+  tiredBtn.classList.add("show");
+}, 150);
   }
+  animateTaskShuffle();
 }
+
 
 /* ========================= */
 /* MODE SWITCHING */
@@ -134,7 +184,6 @@ function selectTask(index) {
 
   if (!selectedTask) return;
 
-
   // lock in text immediately
   text.textContent = "Committing...";
   sub.textContent = selectedTask.name;
@@ -147,10 +196,11 @@ function selectTask(index) {
   document.getElementById("home-screen").style.pointerEvents = "none";
 
   setTimeout(() => {
-
     // switch screens
     document.getElementById("home-screen").classList.add("hidden");
     document.getElementById("hold-screen").classList.remove("hidden");
+
+    playScreenAnimation("hold-screen");
 
     overlay.classList.add("hidden");
     overlay.classList.remove("commit-pulse");
@@ -222,6 +272,8 @@ function stopHold() {
     updateHoldUI();
   }
 }
+
+
 
 /* ========================= */
 /* RADIAL PROGRESS */
@@ -298,7 +350,7 @@ function startLockAnimation() {
 function startTimer(minutes) {
   clearInterval(timerInterval);
 
-  totalTime =  3;//minutes * 60; RIMER FIX LATER
+  totalTime = 2; //minutes * 60; RIMER FIX LATER
   timeLeft = totalTime;
   isPaused = false;
 
@@ -335,11 +387,20 @@ function updateTimerUI() {
 }
 
 function timerFinished() {
-    updateStreak();
-commitCount++;
-    document.getElementById("completion-screen").style.background = "#0f0f0f";
+  updateStreak();
+  commitCount++;
+  sessionHistory.unshift({
+    name: selectedTask.name,
+    time: selectedTask.time,
+  });
+
+  sessionHistory = sessionHistory.slice(0, 5); // keep last 5
+
+  localStorage.setItem("session-history", JSON.stringify(sessionHistory));
   document.getElementById("timer-screen").classList.add("hidden");
   document.getElementById("completion-screen").classList.remove("hidden");
+
+  playScreenAnimation("completion-screen");
 
   const title = document.getElementById("completion-title");
   const task = document.getElementById("completion-task-name");
@@ -353,16 +414,11 @@ commitCount++;
   } completed`;
 
   document.getElementById("completion-streak").textContent =
-  `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
-
-
-setTimeout(() => {
-  document.getElementById("completion-screen").style.background = "#111";
-}, 300);
+    `Streak: ${streak} day${streak === 1 ? "" : "s"} • Today’s commits: ${commitCount}`;
 
   // reset animation state
   const items = document.querySelectorAll(".completion-item");
-  items.forEach(el => el.classList.remove("show"));
+  items.forEach((el) => el.classList.remove("show"));
 
   // staged reveal (feels intentional, not random fade-in)
   const delays = [150, 450, 750, 1050, 1350, 1650];
@@ -372,7 +428,34 @@ setTimeout(() => {
       el.classList.add("show");
     }, delays[i]);
   });
+  setTimeout(() => {
+  renderSessionHistory();
+}, 50);
+}
 
+function renderSessionHistory() {
+  const container = document.getElementById("session-history");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  sessionHistory.forEach((item, index) => {
+    const el = document.createElement("p");
+
+    el.className = "completion-item";
+    el.textContent = `${item.name} (${item.time} min)`;
+
+    container.appendChild(el);
+
+    // stagger animation slightly after main completion items
+    setTimeout(
+      () => {
+        el.classList.add("show");
+      },
+      1800 + index * 200,
+    );
+  });
 }
 
 function returnToHome() {
@@ -390,8 +473,9 @@ function goToTimerScreen() {
   document.getElementById("hold-screen").classList.add("hidden");
   document.getElementById("timer-screen").classList.remove("hidden");
 
-  document.getElementById("timer-task-name").textContent =
-    selectedTask.name;
+  playScreenAnimation("timer-screen");
+
+  document.getElementById("timer-task-name").textContent = selectedTask.name;
 
   resetTimerUI();
   startTimer(selectedTask.time);
@@ -450,31 +534,42 @@ function returnToHomeFromCompletion() {
 /* ========================= */
 
 function createCustomTask() {
-  const name = document.getElementById("custom-task-name").value;
-  const time = parseInt(document.getElementById("custom-task-time").value);
+  const nameEl = document.getElementById("custom-task-name");
+  const timeEl = document.getElementById("custom-task-time");
+
+  const name = nameEl.value.trim();
+  const time = parseInt(timeEl.value);
 
   if (!name || !time || time <= 0) return;
 
-  selectedTask = {
-    name: name,
-    time: time,
-  };
+  selectedTask = { name, time };
 
-  // clear inputs (UX)
-  document.getElementById("custom-task-name").value = "";
-  document.getElementById("custom-task-time").value = "";
+  nameEl.value = "";
+  timeEl.value = "";
 
-  // go directly to hold screen
-  document.getElementById("hold-task-name").textContent = selectedTask.name;
-  document.getElementById("hold-task-time").textContent =
-    `${selectedTask.time} ${selectedTask.time === 1 ? "minute" : "minutes"}`;
+  const holdName = document.getElementById("hold-task-name");
+  const holdTime = document.getElementById("hold-task-time");
 
-  document.getElementById("home-screen").classList.add("hidden");
-  document.getElementById("hold-screen").classList.remove("hidden");
+  if (!holdName || !holdTime) {
+    console.error("Hold screen elements missing");
+    return;
+  }
 
-  resetHoldState();
+  holdName.textContent = selectedTask.name;
+  holdTime.textContent = `${selectedTask.time} ${
+    selectedTask.time === 1 ? "minute" : "minutes"
+  }`;
+
+  const home = document.getElementById("home-screen");
+  const hold = document.getElementById("hold-screen");
+
+  home.classList.add("hidden");
+  hold.classList.remove("hidden");
+
+  resetRadial();        // IMPORTANT
+  resetHoldState();     // safe now
+  playScreenAnimation("hold-screen");
 }
-
 
 function updateStreak() {
   const today = new Date().toDateString();
@@ -482,11 +577,9 @@ function updateStreak() {
 
   if (!lastCommitDate) {
     streak = 1;
-  } 
-  else if (lastCommitDate === yesterday) {
+  } else if (lastCommitDate === yesterday) {
     streak += 1;
-  } 
-  else if (lastCommitDate !== today) {
+  } else if (lastCommitDate !== today) {
     streak = 1;
   }
 
@@ -494,4 +587,38 @@ function updateStreak() {
 
   localStorage.setItem("commit-streak", streak);
   localStorage.setItem("last-commit-date", lastCommitDate);
+}
+
+function initTaskHover() {
+  const el1 = document.getElementById("task1");
+  const el2 = document.getElementById("task2");
+  const el3 = document.getElementById("task3");
+  const custom = document.getElementById("custom-task-card");
+
+  const display = document.getElementById("ai-reframe");
+
+  function show(text) {
+    display.textContent = text;
+    display.style.opacity = 1;
+  }
+
+  function hide() {
+    display.style.opacity = 0;
+  }
+
+  el1.addEventListener("mouseenter", () => show(taskReframes["Study"]));
+  el2.addEventListener("mouseenter", () =>
+    show(taskReframes["Clean your desk"])
+  );
+  el3.addEventListener("mouseenter", () => show(taskReframes["Walk"]));
+
+  // 🔥 NEW: custom task hover
+  custom.addEventListener("mouseenter", () =>
+    show("Make this session yours.")
+  );
+
+  el1.addEventListener("mouseleave", hide);
+  el2.addEventListener("mouseleave", hide);
+  el3.addEventListener("mouseleave", hide);
+  custom.addEventListener("mouseleave", hide);
 }

@@ -6,6 +6,9 @@
     <title>Commit</title>
 
     <!-- Styles -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css" />
   </head>
 
@@ -13,27 +16,27 @@
     <!-- HOME SCREEN -->
     <div id="home-screen" class="screen">
       <!-- Title -->
-      <h1 class="title">What will you commit to right now?</h1>
-
+      <h1 class="title anim-item">What will you commit to right now?</h1>
+<p id="ai-reframe" class="reframe"></p>
       <!-- Task Grid -->
       <div class="task-grid">
         <!-- Suggestion 1 -->
-        <div class="task-card" onclick="selectTask(0)" id="task1">
+        <div class="task-card anim-item" onclick="selectTask(0)" id="task1">
           Study (10 min)
         </div>
 
         <!-- Suggestion 2 -->
-        <div class="task-card" onclick="selectTask(1)" id="task2">
+        <div class="task-card anim-item" onclick="selectTask(1)" id="task2">
           Clean your desk (10 min)
         </div>
 
         <!-- Suggestion 3 -->
-        <div class="task-card" onclick="selectTask(2)" id="task3">
+        <div class="task-card anim-item" onclick="selectTask(2)" id="task3">
           Walk (5 min)
         </div>
 
         <!-- Custom Task Card -->
-        <div class="task-card custom-card">
+        <div class="task-card custom-card anim-item" id="custom-task-card">
           <input type="text" id="custom-task-name" placeholder="task name" />
 
           <input
@@ -51,43 +54,42 @@
 
       <!-- Bottom controls -->
       <div class="home-controls">
-        <!-- shuffle icon button -->
-        <button id="shuffle-btn" class="icon-btn" onclick="shuffleTasks()">
-          &#10227;
-        </button>
+  <div class="left-controls">
+    <button id="shuffle-btn" class="icon-btn anim-item" onclick="shuffleTasks()">
+      &#10227;
+    </button>
+  </div>
 
-        <!-- too tired -->
-        <button
-          id="too-tired-btn"
-          class="text-btn hidden"
-          onclick="showEasyMode()"
-        >
-          too tired?
-        </button>
-      </div>
+  <div class="right-controls">
+    <button
+      id="too-tired-btn"
+      class="text-btn fade-in hidden"
+      onclick="showEasyMode()"
+    >
+      too tired?
+    </button>
+  </div>
+</div>
     </div>
 
     <!-- ========================= -->
     <!-- HOLD TO COMMIT SCREEN -->
     <!-- ========================= -->
-    <div id="hold-screen" class="screen hidden">
-      <div class="hold-header">
-        <!-- Selected Task Info -->
-        <h1 id="hold-task-name">Task Name</h1>
-        <p id="hold-task-time">10 minutes</p>
+   <div id="hold-screen" class="screen hidden">
+  <div class="hold-container">
 
-        <!-- Instructions -->
-        <div class="hold-instruction">
-          <h2>Hold to Commit</h2>
-          <p>Stay pressed until the circle fills</p>
-        </div>
+    <h1 class="hold-title anim-item">Hold to Commit</h1>
 
-        <!-- Hold Interaction Area -->
-        <div id="hold-area" class="hold-area">
+    <p class="hold-task anim-item">
+      <span id="hold-task-name">Task</span> |
+      <span id="hold-task-time">10 minutes</span>
+    </p>
+
+         <div id="hold-area" class="hold-area">
           <!-- Circular Progress Indicator -->
           <div class="progress-container">
             <svg
-              class="progress-ring"
+              class="progress-ring anim-item"
               width="160"
               height="160"
               viewBox="0 0 160 160"
@@ -104,35 +106,39 @@
                 r="70"
               ></circle>
             </svg>
+           
           </div>
         </div>
-      </div>
-    </div>
+         <p class="hold-hint anim-item">
+  Stay pressed until the circle fills
+</p>
+  </div>
+</div>
 
     <!-- ========================= -->
     <!-- TIMER SCREEN -->
     <!-- ========================= -->
     <div id="timer-screen" class="screen hidden">
       <!-- Task Title -->
-      <h1 id="timer-task-name">Task Name</h1>
+      <h1 id="timer-task-name" class="anim-item">Task Name</h1>
 
       <!-- Countdown Display -->
       <div class="timer-display">
-        <h2 id="timer-countdown">10:00</h2>
+        <h2 id="timer-countdown" class="anim-item">10:00</h2>
       </div>
 
       <!-- Status Message -->
-      <p id="timer-status">Stay focused.</p>
+      <p id="timer-status" class="anim-item">Stay focused.</p>
 
       <!-- Progress Bar (Fallback Visual) -->
       <div class="timer-bar-container">
-        <div id="timer-bar" class="timer-bar"></div>
+        <div id="timer-bar" class="timer-bar anim-item"></div>
       </div>
 
       <!-- Timer Controls -->
       <div class="timer-controls">
         <!-- Pause / Resume -->
-        <button id="pause-btn" onclick="toggleTimer()">Pause</button>
+        <button id="pause-btn" onclick="toggleTimer()" class="anim-item">Pause</button>
 
         <!-- Quit (Hidden Initially) -->
         <button id="quit-btn" class="hidden" onclick="quitToHome()">
@@ -163,9 +169,6 @@
 
       <!-- Reinforcement message -->
       <div class="completion-message">
-        <h2 class="completion-item" id="completion-identity">
-          You are someone who commits.
-        </h2>
         <p class="completion-item" id="completion-reinforce">
           Small actions compound.
         </p>
@@ -175,7 +178,7 @@
       <div class="completion-stats">
         <p id="completion-streak" class="completion-item">Today’s commits: 1</p>
       </div>
-
+     
       <!-- Continue button -->
       <button
         class="completion-item"
@@ -184,6 +187,11 @@
       >
         Back to Home
       </button>
+      <div class="completion-history">
+  <h3 class="anim-item">Today’s sessions</h3>
+  <div id="session-history"></div>
+</div>
+
     </div>
 
     <!-- COMMIT TRANSITION OVERLAY -->
